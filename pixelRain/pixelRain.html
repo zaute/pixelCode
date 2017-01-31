@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<title>pixelRain</title>
+
+	<script type="text/javascript">
+
+	var loop,
+		rain,
+		width = window.innerWidth,
+		height = window.innerHeight,
+		depth = 25;
+
+	function initCanvas()
+	{
+		var canvas = document.getElementById("canvas"),
+			ctx = canvas.getContext("2d");
+
+		canvas.width = width;
+		canvas.height = height;
+	}
+
+	function paintCanvas()
+	{
+		var canvas = document.getElementById("canvas"),
+		ctx = canvas.getContext("2d");
+
+		ctx.fillStyle = "black";
+		ctx.fillRect(0, 0, width, height);		
+	}
+
+	function initSphere()
+	{		
+		rain = [];
+		var numberOfDrops = 500;
+
+		for(var i=0; i < numberOfDrops; i++ )
+		{
+			var x = Math.floor(Math.random()*width);
+			var y = Math.floor(Math.random()*height);
+			var z = Math.floor(Math.random()*depth);
+
+			rain.push({x: x, y: y, z: z});
+		}
+	}
+
+	function draw()
+	{		
+		paintCanvas();
+		drawRain();
+	}
+
+	function drawRain() 
+	{
+		var canvas = document.getElementById("canvas"),
+		ctx = canvas.getContext("2d");
+
+		for(var i=0; i<rain.length; i++)
+		{
+			rain[i].y += Math.floor(rain[i].z/2)+1;
+			if(rain[i].y > height) rain[i].y = 0;
+
+			rain[i].x += 4;
+			if(rain[i].x > width) rain[i].x = 0;
+
+			// calculate color
+			var col = Math.floor(255*(rain[i].z/depth));
+			if(col<50) col = 50	;
+			var colString = col.toString(16);
+
+			//size
+			var size = Math.floor(rain[i].z/4);
+
+			ctx.fillStyle = "#" + colString + colString + colString;
+			ctx.fillRect(rain[i].x, rain[i].y, size, size);
+
+		}
+	}
+
+	window.onload = function() {
+		initCanvas();
+		initSphere();
+
+		if(typeof loop != "undefined") clearInterval(loop); 
+		loop = setInterval(draw, 10);
+	}
+
+	</script>
+
+</head>
+<body>
+	<canvas id="canvas"></canvas>
+</body>
+</html>

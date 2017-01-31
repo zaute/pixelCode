@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<title>pixelSphereGreenFuzzy</title>
+</head>
+<body>
+	<canvas id="canvas"></canvas>
+
+	<script type="text/javascript">
+
+	var loop,
+		sphere,
+		width = window.innerWidth,
+		height = window.innerHeight,
+		radius = 150;
+
+	function initCanvas()
+	{
+		var canvas = document.getElementById("canvas"),
+			ctx = canvas.getContext("2d");
+
+		canvas.width = width;
+		canvas.height = height;
+	}
+
+	function paintCanvas()
+	{
+		var canvas = document.getElementById("canvas"),
+		ctx = canvas.getContext("2d");
+
+		ctx.fillStyle = "black";
+		ctx.fillRect(0, 0, width, height);		
+	}
+
+	function initSphere()
+	{
+		sphere = [];
+		numberOfPixels = 500;
+
+		for(var i=0; i < numberOfPixels; i++ )
+		{
+			// theta. 0 <= theta <= 2*pi
+			var theta = Math.random()*(2*Math.PI);
+			//phi. 0 <= phi <= pi
+			var phi = Math.random()*(Math.PI);
+
+			sphere.push({theta: theta, phi: phi});
+		}
+	}
+
+	function draw()
+	{		
+		paintCanvas();
+		drawSphere();
+	}
+
+	function drawSphere() 
+	{
+		var canvas = document.getElementById("canvas"),
+		ctx = canvas.getContext("2d");
+
+		for(var i=0; i<sphere.length; i++)
+		{
+			sphere[i].theta += 0.005;
+			if(sphere[i].theta > 2*Math.PI)
+			{
+				sphere[i].theta = 0;
+			}
+			var z = Math.floor(radius*Math.cos(sphere[i].theta)*Math.sin(sphere[i].phi));			
+			var x = Math.floor((radius+i/4)*Math.sin(sphere[i].theta)*Math.sin(sphere[i].phi));
+			var y = Math.floor((radius+i/6)*Math.cos(sphere[i].phi));
+
+			// calculate color
+			var col = Math.floor(255*((z)/(radius)));	
+			if(col<50) col = 50;
+			var colString = col.toString(16);
+
+			//calculate size
+			var size = 2;
+			if(z>0) size = z/15;
+
+			ctx.fillStyle = "#00" + colString + "50";
+			ctx.fillRect(width/2 + x, height/2 + y, size, size);
+		}
+	}
+
+	
+	function start() 
+	{
+		initCanvas();
+		initSphere();
+
+//		draw();
+		if(typeof loop != "undefined") clearInterval(loop); 
+		loop = setInterval(draw, 10);
+	}
+
+	start();
+
+	</script>
+</body>
+</html>

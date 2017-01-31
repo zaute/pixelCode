@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<title>pixelStars</title>
+</head>
+<body>
+	<canvas id="canvas"></canvas>
+
+	<script type="text/javascript">
+
+	var loop,
+		stars,
+		max_x = window.innerWidth;
+		max_y = window.innerHeight;
+		max_z = 3000;
+
+	function initCanvas()
+	{
+		var canvas = document.getElementById("canvas"),
+			ctx = canvas.getContext("2d");
+
+		canvas.height = max_y;
+		canvas.width = max_x;
+	}
+
+	function paintCanvas()
+	{
+		var canvas = document.getElementById("canvas"),
+		ctx = canvas.getContext("2d");
+
+		ctx.fillStyle = "black";
+		ctx.fillRect(0, 0, max_x, max_y);		
+	}
+
+	function initStars()
+	{
+		stars = [];
+		numberOfStars = 1000;
+
+		for(var i=0; i < numberOfStars; i++ )
+		{
+			stars.push({x: Math.floor((Math.random()*max_x)+1) - max_x/2, y: Math.floor((Math.random()*max_y)+1) - max_y/2, z: Math.floor((Math.random()*max_z)+1)});
+		}
+
+	}
+
+	function draw()
+	{
+		paintCanvas();
+//		moveStars();
+		drawStars();
+	}
+
+	function moveStars()
+	{
+		for(var i=0; i<stars.length; i++)
+		{
+			stars[i].z -= 5;
+
+			if(stars[i].z <= 0)
+			{
+				stars[i].z = max_z;
+			}
+		}		
+	}
+
+	function drawStars() 
+	{
+		var canvas = document.getElementById("canvas"),
+		ctx = canvas.getContext("2d");
+
+		for(var i=0; i<stars.length; i++)
+		{
+			//move
+			stars[i].z -= 10;
+
+			// clip z
+			if(stars[i].z <= 0)
+			{
+				stars[i].z = max_z;
+			}
+/*
+			//clip x
+			if(max_x/2 + max_x*stars[i].x/stars[i].z < 0 || max_x/2 + max_x*stars[i].x/stars[i].z > max_x)
+			{
+				stars[i].z = max_z;
+			}
+			//clip y
+			if(max_y/2 + max_y*stars[i].y/stars[i].z < 0 || max_y/2 + max_y*stars[i].y/stars[i].z > max_y)
+			{
+				stars[i].z = max_z;
+			}
+
+*/
+			var col = 255 - Math.round(stars[i].z*255/max_z);
+			var colString = col.toString(16);
+
+			ctx.fillStyle = "#" + colString + colString + colString;
+			ctx.fillRect(max_x/2 + max_x*stars[i].x/stars[i].z, max_y/2 + max_y*stars[i].y/stars[i].z, 2, 2);
+		}
+	}
+
+	
+	function start() 
+	{
+		initCanvas();
+		initStars();
+
+		if(typeof loop != "undefined") clearInterval(loop); 
+		loop = setInterval(draw, 20);
+	}
+
+	start();
+
+	</script>
+</body>
+</html>

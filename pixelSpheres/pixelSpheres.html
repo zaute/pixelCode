@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<title>pixelSpheres</title>
+</head>
+<body>
+	<canvas id="canvas"></canvas>
+
+	<script type="text/javascript">
+
+	var loop,
+		sphere,
+		width = window.innerWidth,
+		height = window.innerHeight,
+		radius = 50,
+		numberOfSpheres = 20,
+		numberOfPixels = 100,
+		spheres = [];
+
+
+	function initCanvas()
+	{
+		var canvas = document.getElementById("canvas"),
+			ctx = canvas.getContext("2d");
+
+		canvas.width = width;
+		canvas.height = height;
+	}
+
+	function paintCanvas()
+	{
+		var canvas = document.getElementById("canvas"),
+		ctx = canvas.getContext("2d");
+
+		ctx.fillStyle = "black";
+		ctx.fillRect(0, 0, width, height);		
+	}
+
+	function initSphere()
+	{
+
+		for(var i=0; i < numberOfSpheres; i++)
+		{
+			var sphere = [];
+			for(var j=0; j < numberOfPixels; j++ )
+			{
+				// theta. 0 <= theta <= 2*pi
+				var theta = (j/numberOfPixels)*(2*Math.PI);
+				//phi. 0 <= phi <= pi
+				var phi = Math.random()*(Math.PI);
+				sphere.push({theta: theta, phi: phi});
+			}
+
+			var dir = Math.random();
+			var dirX = "right";
+			if (dir < 0.5) dirX = "left";
+			console.log(dir);
+
+			var deltaX = Math.floor(Math.random()*width);
+			var angleY = Math.random()*Math.PI;
+
+			spheres.push({sphere: sphere, dirX: dirX, deltaX: deltaX, angleY: angleY});
+		}
+	}
+
+	function draw()
+	{		
+		paintCanvas();
+		drawSphere();
+	}
+
+	function drawSphere() 
+	{
+		var canvas = document.getElementById("canvas"),
+		ctx = canvas.getContext("2d");
+
+		for(var h=0; h<spheres.length; h++)
+		{
+			var sphere = spheres[h].sphere;;
+			var dirX = spheres[h].dirX;
+			var deltaX = spheres[h].deltaX;
+			var angleY = spheres[h].angleY;
+
+			//calculate x displacement
+			if(dirX == "right")
+			{
+				deltaX += 2;
+			}
+			else
+			{
+				deltaX -= 2;			
+			}
+			if(deltaX >= width-radius) 
+			{
+				dirX = "left";
+			}
+			else if(deltaX <= radius)
+			{
+				dirX = "right";			
+			}
+
+			//calculate y displacement
+			angleY += 0.015;
+			deltaY = Math.floor(height/2*Math.sin(angleY));
+			if(angleY >= Math.PI) angleY = 0
+
+			for(var i=0; i<sphere.length; i++)
+			{
+				sphere[i].theta += 0.01;
+				if(sphere[i].theta > 2*Math.PI)
+				{
+					sphere[i].theta = 0;
+				}
+				var z = Math.floor(radius*Math.cos(sphere[i].theta)*Math.sin(sphere[i].phi));
+				var x = Math.floor(radius*Math.sin(sphere[i].theta)*Math.sin(sphere[i].phi));
+				var y = Math.floor(radius*Math.cos(sphere[i].phi));
+
+				// calculate color
+				var col = Math.floor(255*((z+radius)/(2*radius)));
+				if(col<50) col = 50;
+				var colString = col.toString(16);
+
+				ctx.fillStyle = "#" + colString + colString + colString;
+				ctx.fillRect(deltaX + x, height - (radius + deltaY + y), 2, 2);
+			}
+
+			// store values
+			spheres[h].dirX = dirX;
+			spheres[h].deltaX = deltaX;
+			spheres[h].angleY = angleY;
+		}
+	}
+
+	
+	function start() 
+	{
+		initCanvas();
+		initSphere();
+
+		if(typeof loop != "undefined") clearInterval(loop); 
+		loop = setInterval(draw, 10);
+	}
+
+	start();
+
+	</script>
+</body>
+</html>

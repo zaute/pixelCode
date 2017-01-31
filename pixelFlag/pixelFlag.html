@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<title>pixelFlag</title>
+
+	<script type="text/javascript">
+
+	var loop,
+		precalcSin,
+		displacementX = 0,
+		displacementY = 120,
+		resolutionX = 100,
+		resolutionY = 100,
+		width = window.innerWidth,
+		height = window.innerHeight;
+
+	function initCanvas()
+	{
+		var canvas = document.getElementById("canvas"),
+			ctx = canvas.getContext("2d");
+
+		canvas.width = width;
+		canvas.height = height;
+	}
+
+	function paintCanvas()
+	{
+		var canvas = document.getElementById("canvas"),
+		ctx = canvas.getContext("2d");
+
+		ctx.fillStyle = "black";
+		ctx.fillRect(0, 0, width, height);		
+	}
+
+	function precalc()
+	{
+		precalcSin = [];
+		for(var i=0; i<360; i++)
+		{
+//			precalcSin.push({degree: Math.floor(Math.sin(Math.PI*i/180))});
+			console.log(Math.floor(Math.sin(2*Math.PI*(i/360))));
+		}	
+	}
+
+
+	function draw()
+	{		
+		paintCanvas();
+		drawFlag();
+	}
+
+	function drawFlag() 
+	{
+		var canvas = document.getElementById("canvas"),
+		ctx = canvas.getContext("2d");
+
+		displacementX += 1;
+		if(displacementX == 360) displacementX = 0;
+		displacementY += 1;
+		if(displacementY == 360) displacementY = 0;
+
+		var size = 1;
+		var stretchX = 4;
+		var stretchY = 4;
+
+		var anchorX = Math.floor(resolutionX*Math.sin(2*Math.PI*(displacementX)/180));
+
+		for(var i=0; i<resolutionX; i++)
+		{
+
+			var x = Math.floor(resolutionX*Math.sin(2*Math.PI*(i+displacementX)/180));
+			var y = 0;
+
+			for(var j=0; j<resolutionY; j++)
+			{	
+				ctx.fillStyle = "pink";
+				ctx.fillRect(400 + stretchX*i + x - anchorX, 100 + stretchY*j + i, size, size);
+			}
+		}
+	}
+
+	window.onload = function() {
+		initCanvas();
+//		precalc();
+
+//		draw();
+		if(typeof loop != "undefined") clearInterval(loop); 
+		loop = setInterval(draw, 10);
+	}
+
+	</script>
+
+</head>
+<body>
+	<canvas id="canvas"></canvas>
+</body>
+</html>

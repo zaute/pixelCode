@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<title>pixelSphere</title>
+</head>
+<body>
+	<canvas id="canvas"></canvas>
+
+	<script type="text/javascript">
+
+	var loop,
+		sphere,
+		width = window.innerWidth,
+		height = window.innerHeight,
+		radius = 150,
+		deltaX = width/2,
+		dirX = "right",
+		deltaY = height/2,
+		angleY = Math.PI/4;
+
+	function initCanvas()
+	{
+		var canvas = document.getElementById("canvas"),
+			ctx = canvas.getContext("2d");
+
+		canvas.width = width;
+		canvas.height = height;
+	}
+
+	function paintCanvas()
+	{
+		var canvas = document.getElementById("canvas"),
+		ctx = canvas.getContext("2d");
+
+		ctx.fillStyle = "black";
+		ctx.fillRect(0, 0, width, height);		
+	}
+
+	function initSphere()
+	{
+		sphere = [];
+		numberOfPixels = 600;
+
+		for(var i=0; i < numberOfPixels; i++ )
+		{
+			// theta. 0 <= theta <= 2*pi
+			var theta = Math.random()*(2*Math.PI);
+			//phi. 0 <= phi <= pi
+			var phi = Math.random()*(Math.PI);
+
+//			var x = Math.floor(radius*Math.cos(theta)*Math.sin(phi));
+//			var y = Math.floor(radius*Math.sin(theta)*Math.sin(phi));
+//			var z = Math.floor(radius*Math.cos(phi));
+
+			sphere.push({theta: theta, phi: phi});
+		}
+
+	}
+
+	function draw()
+	{		
+		paintCanvas();
+//		initSphere();
+		drawSphere();
+	}
+
+	function drawSphere() 
+	{
+		var canvas = document.getElementById("canvas"),
+		ctx = canvas.getContext("2d");
+
+		//calculate x displacement
+		if(dirX == "right")
+		{
+			deltaX += 2;
+		}
+		else
+		{
+			deltaX -= 2;			
+		}
+		if(deltaX >= width-radius) 
+		{
+			dirX = "left";
+		}
+		else if(deltaX <= radius)
+		{
+			dirX = "right";			
+		}
+
+		//calculate y displacement
+		angleY += 0.015;
+		deltaY = Math.floor(height/2*Math.sin(angleY));
+		if(angleY >= Math.PI) angleY = 0
+
+		for(var i=0; i<sphere.length; i++)
+		{
+			sphere[i].theta += 0.01;
+			if(sphere[i].theta > 2*Math.PI)
+			{
+				sphere[i].theta = 0;
+			}
+			var z = Math.floor(radius*Math.cos(sphere[i].theta)*Math.sin(sphere[i].phi));
+			var x = Math.floor(radius*Math.sin(sphere[i].theta)*Math.sin(sphere[i].phi));
+			var y = Math.floor(radius*Math.cos(sphere[i].phi));
+
+			// calculate color
+			var col = Math.floor(255*((z+radius)/(2*radius)));
+			if(col<50) col = 50;
+			var colString = col.toString(16);
+
+			ctx.fillStyle = "#" + colString + colString + colString;
+			ctx.fillRect(deltaX + x, height - (radius + deltaY + y), 2, 2);
+
+		}
+	}
+
+	
+	function start() 
+	{
+		initCanvas();
+		initSphere();
+
+//		draw();
+		if(typeof loop != "undefined") clearInterval(loop); 
+		loop = setInterval(draw, 10);
+	}
+
+	start();
+
+	</script>
+</body>
+</html>
